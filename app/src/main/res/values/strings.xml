@@ -4,13 +4,13 @@
     <string name="title">My Music Player</string>
     <string name="theme_color">Theme Color</string>
     <string name="sleep_timer">Sleep Timer</string>
-    <string name="rate_app">Rate This App</string>
+    <string name="rate_app">MAD Project</string>
     <string name="about">About</string>
     <string name="search">Search</string>
     <string name="favorites">Favorites</string>
     <string name="about_text">My Music Player is an application to play mp3 music on your android device. With simple interface make you enjoy the music
         easily. \n\n
-              \t \t  \t \t \t  \t  \t \t \t  \t \t \t  @Vikram Markali
+              \t \t  \t \t \t  \t  \t \t \t  \t \t \t  @Arjun, Dakshita, Jal
 
     </string>
     <string name="ok">OK</string>

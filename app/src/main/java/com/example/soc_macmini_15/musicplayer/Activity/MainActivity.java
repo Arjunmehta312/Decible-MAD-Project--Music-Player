@@ -278,22 +278,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(this, "Search", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.menu_favorites:
-                if (checkFlag)
-                    if (mediaPlayer != null) {
-                        if (favFlag) {
-                            Toast.makeText(this, "Added to Favorites", Toast.LENGTH_SHORT).show();
-                            item.setIcon(R.drawable.ic_favorite_filled);
-                            SongsList favList = new SongsList(songList.get(currentPosition).getTitle(),
-                                    songList.get(currentPosition).getSubTitle(), songList.get(currentPosition).getPath());
-                            FavoritesOperations favoritesOperations = new FavoritesOperations(this);
-                            favoritesOperations.addSongFav(favList);
-                            setPagerLayout();
-                            favFlag = false;
-                        } else {
-                            item.setIcon(R.drawable.favorite_icon);
-                            favFlag = true;
-                        }
+                if (checkFlag && mediaPlayer != null) {
+                    if (favFlag) {  // When song is not yet favorited, add it
+                        Toast.makeText(this, "Added to Favorites", Toast.LENGTH_SHORT).show();
+                        item.setIcon(R.drawable.ic_favorite_filled);
+                        SongsList favList = new SongsList(
+                                songList.get(currentPosition).getTitle(),
+                                songList.get(currentPosition).getSubTitle(),
+                                songList.get(currentPosition).getPath());
+                        FavoritesOperations favoritesOperations = new FavoritesOperations(this);
+                        favoritesOperations.addSongFav(favList);
+                        setPagerLayout();
+                        favFlag = false;
+                    } else {  // When already favorited, remove it
+                        Toast.makeText(this, "Removed from Favorites", Toast.LENGTH_SHORT).show();
+                        item.setIcon(R.drawable.favorite_icon);
+                        SongsList currentFav = songList.get(currentPosition);
+                        FavoritesOperations favoritesOperations = new FavoritesOperations(this);
+                        favoritesOperations.removeSong(currentFav.getPath());
+                        setPagerLayout();
+                        favFlag = true;
                     }
+                }
                 return true;
         }
 

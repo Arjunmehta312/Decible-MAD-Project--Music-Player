@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.example.soc_macmini_15.musicplayer.Adapter.SongAdapter;
 import com.example.soc_macmini_15.musicplayer.Model.SongsList;
 import com.example.soc_macmini_15.musicplayer.R;
+import com.example.soc_macmini_15.musicplayer.Activity.MainActivity;
 
 import java.util.ArrayList;
 
@@ -111,7 +112,7 @@ public class AllSongFragment extends ListFragment {
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                showDialog(position);
+                ((MainActivity)getActivity()).showOptionsDialog(position, songsList);
                 return true;
             }
         });

@@ -9,11 +9,12 @@ import android.support.v4.app.FragmentPagerAdapter;
 import com.example.soc_macmini_15.musicplayer.Fragments.AllSongFragment;
 import com.example.soc_macmini_15.musicplayer.Fragments.CurrentSongFragment;
 import com.example.soc_macmini_15.musicplayer.Fragments.FavSongFragment;
+import com.example.soc_macmini_15.musicplayer.Fragments.PlaylistFragment;
 
 public class ViewPagerAdapter extends FragmentPagerAdapter {
 
     private ContentResolver contentResolver;
-    private String title[] = {"All SONGS","CURRENT PLAYLIST", "FAVORITES"};
+    private String title[] = {"ALL SONGS", "CURRENT PLAYLIST", "FAVORITES", "PLAYLISTS"};
 
     public ViewPagerAdapter(FragmentManager fm, ContentResolver contentResolver) {
         super(fm);
@@ -29,6 +30,8 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
                 return CurrentSongFragment.getInstance(position);
             case 2:
                 return FavSongFragment.getInstance(position);
+            case 3:
+                return PlaylistFragment.getInstance(position);
             default:
                 return null;
         }

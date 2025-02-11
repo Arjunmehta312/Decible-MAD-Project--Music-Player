@@ -31,18 +31,22 @@ import android.widget.SearchView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.EditText;
 
 import com.example.soc_macmini_15.musicplayer.Adapter.ViewPagerAdapter;
 import com.example.soc_macmini_15.musicplayer.DB.FavoritesOperations;
+import com.example.soc_macmini_15.musicplayer.DB.PlaylistOperations;
 import com.example.soc_macmini_15.musicplayer.Fragments.AllSongFragment;
 import com.example.soc_macmini_15.musicplayer.Fragments.CurrentSongFragment;
 import com.example.soc_macmini_15.musicplayer.Fragments.FavSongFragment;
+import com.example.soc_macmini_15.musicplayer.Fragments.PlaylistFragment;
+import com.example.soc_macmini_15.musicplayer.Model.Playlist;
 import com.example.soc_macmini_15.musicplayer.Model.SongsList;
 import com.example.soc_macmini_15.musicplayer.R;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, AllSongFragment.createDataParse, FavSongFragment.createDataParsed, CurrentSongFragment.createDataParsed {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, AllSongFragment.createDataParse, FavSongFragment.createDataParsed, CurrentSongFragment.createDataParsed, PlaylistFragment.createPlaylistDialog {
 
     private Menu menu;
 
@@ -67,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Handler handler;
     Runnable runnable;
 
+    private PlaylistOperations playlistOperations;
+    private Playlist currentPlaylist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +81,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         init();
         grantedPermission();
 
+        playlistOperations = new PlaylistOperations(this);
+        setPagerLayout();
     }
 
     /**
@@ -92,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         FloatingActionButton refreshSongs = findViewById(R.id.btn_refresh);
         seekbarController = findViewById(R.id.seekbar_controller);
         viewPager = findViewById(R.id.songs_viewpager);
+        tabLayout = findViewById(R.id.tabs);
         NavigationView navigationView = findViewById(R.id.nav_view);
         mDrawerLayout = findViewById(R.id.drawer_layout);
         imgBtnPlayPause = findViewById(R.id.img_btn_play);
@@ -138,19 +147,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MainActivity.this,
                     new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSION_REQUEST);
-            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
-                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSION_REQUEST);
-            } else {
-                if (ContextCompat.checkSelfPermission(MainActivity.this,
-                        Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    Snackbar snackbar = Snackbar.make(mDrawerLayout, "Provide the Storage Permission", Snackbar.LENGTH_LONG);
-                    snackbar.show();
-                }
-            }
         } else {
-            setPagerLayout();
+            // Initialize ViewPager only after permissions are granted
+            if (viewPager != null && tabLayout != null) {
+                ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager(), getContentResolver());
+                viewPager.setAdapter(adapter);
+                tabLayout.setupWithViewPager(viewPager);
+            }
         }
     }
 
@@ -163,66 +166,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
-            case MY_PERMISSION_REQUEST:
+            case MY_PERMISSION_REQUEST: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     if (ContextCompat.checkSelfPermission(MainActivity.this,
                             Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                         Toast.makeText(this, "Permission Granted!", Toast.LENGTH_SHORT).show();
-                        setPagerLayout();
-                    } else {
-                        Snackbar snackbar = Snackbar.make(mDrawerLayout, "Provide the Storage Permission", Snackbar.LENGTH_LONG);
-                        snackbar.show();
-                        finish();
+                        // Initialize ViewPager after permission is granted
+                        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager(), getContentResolver());
+                        viewPager.setAdapter(adapter);
+                        tabLayout.setupWithViewPager(viewPager);
                     }
+                } else {
+                    Toast.makeText(this, "Permission Denied!", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
+                return;
+            }
         }
-    }
-
-    /**
-     * Setting up the tab layout with the viewpager in it.
-     */
-
-    private void setPagerLayout() {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager(), getContentResolver());
-        viewPager.setAdapter(adapter);
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-
-        tabLayout = findViewById(R.id.tabs);
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        tabLayout.setupWithViewPager(viewPager);
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
-
     }
 
     /**
@@ -573,5 +535,163 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
         mediaPlayer.release();
         handler.removeCallbacks(runnable);
+    }
+
+    @Override
+    public void onPlaylistSelected(Playlist playlist) {
+        currentPlaylist = playlist;
+        ArrayList<SongsList> playlistSongs = playlistOperations.getPlaylistSongs(playlist.getId());
+        if (!playlistSongs.isEmpty()) {
+            onDataPass(playlistSongs.get(0).getTitle(), playlistSongs.get(0).getPath());
+            fullSongList(playlistSongs, 0);
+        }
+    }
+
+    private void addSongToPlaylist(SongsList song) {
+        if (currentPlaylist != null) {
+            playlistOperations.addSongToPlaylist(currentPlaylist.getId(), song);
+            Toast.makeText(this, "Song added to playlist", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void showOptionsDialog(final int position, final ArrayList<SongsList> songs) {
+        final SongsList selectedSong = songs.get(position);
+        String[] options = {"Play Next", "Add to Playlist"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case 0:
+                        // Play next
+                        if (songs != null && position < songs.size()) {
+                            currentSong(selectedSong);
+                            updateUI();
+                        }
+                        break;
+                    case 1:
+                        // Show playlist selection dialog
+                        showPlaylistSelectionDialog(selectedSong);
+                        break;
+                }
+            }
+        });
+        builder.show();
+    }
+
+    private void showPlaylistSelectionDialog(final SongsList song) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select Playlist");
+        
+        final ArrayList<Playlist> playlists = playlistOperations.getPlaylists();
+        if (playlists.isEmpty()) {
+            // Show dialog to create new playlist
+            AlertDialog.Builder createPlaylistBuilder = new AlertDialog.Builder(this);
+            createPlaylistBuilder.setTitle("No Playlists");
+            createPlaylistBuilder.setMessage("Would you like to create a new playlist?");
+            
+            createPlaylistBuilder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    showCreatePlaylistDialog(song);
+                }
+            });
+            
+            createPlaylistBuilder.setNegativeButton("Cancel", null);
+            createPlaylistBuilder.show();
+            return;
+        }
+        
+        String[] playlistNames = new String[playlists.size()];
+        for (int i = 0; i < playlists.size(); i++) {
+            playlistNames[i] = playlists.get(i).getName();
+        }
+        
+        builder.setItems(playlistNames, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Playlist selectedPlaylist = playlists.get(which);
+                playlistOperations.addSongToPlaylist(selectedPlaylist.getId(), song);
+                Toast.makeText(MainActivity.this, 
+                    "Added to " + selectedPlaylist.getName(), 
+                    Toast.LENGTH_SHORT).show();
+            }
+        });
+        
+        builder.setPositiveButton("New Playlist", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                showCreatePlaylistDialog(song);
+            }
+        });
+        
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
+    }
+
+    private void showCreatePlaylistDialog(final SongsList songToAdd) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Create New Playlist");
+
+        final EditText input = new EditText(this);
+        input.setHint("Playlist name");
+        builder.setView(input);
+
+        builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String playlistName = input.getText().toString();
+                if (!playlistName.isEmpty()) {
+                    playlistOperations.createPlaylist(playlistName);
+                    // Get the newly created playlist
+                    ArrayList<Playlist> playlists = playlistOperations.getPlaylists();
+                    if (!playlists.isEmpty()) {
+                        Playlist newPlaylist = playlists.get(playlists.size() - 1);
+                        // Add the song to the new playlist
+                        playlistOperations.addSongToPlaylist(newPlaylist.getId(), songToAdd);
+                        Toast.makeText(MainActivity.this, 
+                            "Created playlist '" + playlistName + "' and added song", 
+                            Toast.LENGTH_SHORT).show();
+                        // Refresh the playlist fragment if it's visible
+                        updateUI();
+                    }
+                } else {
+                    Toast.makeText(MainActivity.this, 
+                        "Please enter a playlist name", 
+                        Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
+    }
+
+    private void updateUI() {
+        if (viewPager != null) {
+            viewPager.getAdapter().notifyDataSetChanged();
+        }
+    }
+
+    private void setPagerLayout() {
+        if (viewPager != null && tabLayout != null) {
+            ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager(), getContentResolver());
+            viewPager.setAdapter(adapter);
+            tabLayout.setupWithViewPager(viewPager);
+            tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
+                    viewPager.setCurrentItem(tab.getPosition());
+                }
+
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab) {
+                }
+
+                @Override
+                public void onTabReselected(TabLayout.Tab tab) {
+                }
+            });
+        }
     }
 }

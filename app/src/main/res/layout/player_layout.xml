@@ -14,35 +14,42 @@
         android:orientation="horizontal">
 
         <ImageButton
+            android:id="@+id/img_btn_shuffle"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/shuffle_icon" />
+
+        <ImageButton
             android:id="@+id/img_btn_replay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:backgroundTint="@color/colorPrimary"
-            android:src="@drawable/undo_icon" />
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/replay_icon" />
 
         <ImageButton
             android:id="@+id/img_btn_previous"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:backgroundTint="@color/colorPrimary"
-            android:src="@drawable/previous_icon" />
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/prev_icon" />
 
         <ImageButton
             android:id="@+id/img_btn_play"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:backgroundTint="@color/colorPrimary"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/play_icon" />
 
         <ImageButton
             android:id="@+id/img_btn_next"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:backgroundTint="@color/colorPrimary"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/next_icon" />
 
         <ImageButton

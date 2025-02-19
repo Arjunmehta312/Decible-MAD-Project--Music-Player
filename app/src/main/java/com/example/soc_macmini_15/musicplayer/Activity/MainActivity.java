@@ -45,12 +45,13 @@ import com.example.soc_macmini_15.musicplayer.Model.SongsList;
 import com.example.soc_macmini_15.musicplayer.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, AllSongFragment.createDataParse, FavSongFragment.createDataParsed, CurrentSongFragment.createDataParsed, PlaylistFragment.createPlaylistDialog {
 
     private Menu menu;
 
-    private ImageButton imgBtnPlayPause, imgbtnReplay, imgBtnPrev, imgBtnNext, imgBtnSetting;
+    private ImageButton imgBtnPlayPause, imgbtnReplay, imgBtnPrev, imgBtnNext, imgBtnSetting, imgBtnShuffle;
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private SeekBar seekbarController;
@@ -74,6 +75,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private PlaylistOperations playlistOperations;
     private Playlist currentPlaylist;
 
+    private boolean shuffleMode = false;
+    private ArrayList<Integer> shuffleIndices;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         imgBtnNext = findViewById(R.id.img_btn_next);
         imgbtnReplay = findViewById(R.id.img_btn_replay);
         imgBtnSetting = findViewById(R.id.img_btn_setting);
+        imgBtnShuffle = findViewById(R.id.img_btn_shuffle);
 
         tvCurrentTime = findViewById(R.id.tv_current_time);
         tvTotalTime = findViewById(R.id.tv_total_time);
@@ -122,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         refreshSongs.setOnClickListener(this);
         imgBtnPlayPause.setOnClickListener(this);
         imgBtnSetting.setOnClickListener(this);
+        imgBtnShuffle.setOnClickListener(this);
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -136,6 +142,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return true;
             }
         });
+
+        // Optional: Set initial shuffle button state
+        if (shuffleMode) {
+            imgBtnShuffle.setAlpha(1.0f);
+        } else {
+            imgBtnShuffle.setAlpha(0.5f);
+        }
     }
 
     /**
@@ -326,11 +339,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.img_btn_next:
                 if (checkFlag) {
-                    if (currentPosition + 1 < songList.size()) {
-                        attachMusic(songList.get(currentPosition + 1).getTitle(), songList.get(currentPosition + 1).getPath());
-                        currentPosition += 1;
+                    if (shuffleMode && shuffleIndices != null) {
+                        // Get next shuffled position
+                        int currentIndex = shuffleIndices.indexOf(currentPosition);
+                        if (currentIndex + 1 < shuffleIndices.size()) {
+                            int nextPosition = shuffleIndices.get(currentIndex + 1);
+                            attachMusic(songList.get(nextPosition).getTitle(), songList.get(nextPosition).getPath());
+                            currentPosition = nextPosition;
+                        } else {
+                            Toast.makeText(this, "Playlist Ended", Toast.LENGTH_SHORT).show();
+                        }
                     } else {
-                        Toast.makeText(this, "Playlist Ended", Toast.LENGTH_SHORT).show();
+                        // Original next logic
+                        if (currentPosition + 1 < songList.size()) {
+                            attachMusic(songList.get(currentPosition + 1).getTitle(), songList.get(currentPosition + 1).getPath());
+                            currentPosition += 1;
+                        } else {
+                            Toast.makeText(this, "Playlist Ended", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 } else {
                     Toast.makeText(this, "Select the Song ..", Toast.LENGTH_SHORT).show();
@@ -343,6 +369,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 } else {
                     playContinueFlag = false;
                     Toast.makeText(this, "Loop Removed", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.img_btn_shuffle:
+                toggleShuffle();
+                // Update button appearance
+                if (shuffleMode) {
+                    imgBtnShuffle.setAlpha(1.0f);
+                } else {
+                    imgBtnShuffle.setAlpha(0.5f);
                 }
                 break;
         }
@@ -692,6 +727,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 public void onTabReselected(TabLayout.Tab tab) {
                 }
             });
+        }
+    }
+
+    private void toggleShuffle() {
+        shuffleMode = !shuffleMode;
+        if (shuffleMode) {
+            // Create shuffle indices
+            shuffleIndices = new ArrayList<>();
+            for (int i = 0; i < songList.size(); i++) {
+                shuffleIndices.add(i);
+            }
+            // Shuffle the indices
+            Collections.shuffle(shuffleIndices);
+            Toast.makeText(this, "Shuffle On", Toast.LENGTH_SHORT).show();
+        } else {
+            shuffleIndices = null;
+            Toast.makeText(this, "Shuffle Off", Toast.LENGTH_SHORT).show();
         }
     }
 }

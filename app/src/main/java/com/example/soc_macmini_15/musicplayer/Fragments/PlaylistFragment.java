@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.soc_macmini_15.musicplayer.Adapter.PlaylistAdapter;
+import com.example.soc_macmini_15.musicplayer.Adapter.SongAdapter;
 import com.example.soc_macmini_15.musicplayer.DB.PlaylistOperations;
 import com.example.soc_macmini_15.musicplayer.Model.Playlist;
 import com.example.soc_macmini_15.musicplayer.Model.SongsList;
@@ -72,7 +73,7 @@ public class PlaylistFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                createPlaylistDialog.onPlaylistSelected(playlists.get(position));
+                showPlaylistSongs(playlists.get(position));
             }
         });
 
@@ -174,8 +175,65 @@ public class PlaylistFragment extends Fragment {
         builder.show();
     }
 
+    private void showPlaylistSongs(final Playlist playlist) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(playlist.getName());
+
+        final ArrayList<SongsList> songs = playlistOperations.getPlaylistSongs(playlist.getId());
+        if (songs.isEmpty()) {
+            Toast.makeText(getContext(), "No songs in playlist", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        final SongAdapter adapter = new SongAdapter(getContext(), songs);
+        ListView songListView = new ListView(getContext());
+        songListView.setAdapter(adapter);
+
+        builder.setView(songListView);
+        final AlertDialog dialog = builder.create();
+
+        songListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                createPlaylistDialog.onDataPass(songs.get(position).getTitle(), songs.get(position).getPath());
+                createPlaylistDialog.fullSongList(songs, position);
+                dialog.dismiss();
+            }
+        });
+
+        songListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                showSongOptionsDialog(playlist, songs.get(position));
+                return true;
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void showSongOptionsDialog(final Playlist playlist, final SongsList song) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        String[] options = {"Remove from playlist"};
+
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case 0:
+                        playlistOperations.removeSongFromPlaylist(playlist.getId(), song.getPath());
+                        Toast.makeText(getContext(), "Song removed from playlist", Toast.LENGTH_SHORT).show();
+                        setContent();
+                        break;
+                }
+            }
+        });
+        builder.show();
+    }
+
     public interface createPlaylistDialog {
-        void onPlaylistSelected(Playlist playlist);
+        void onDataPass(String name, String path);
+        void fullSongList(ArrayList<SongsList> songList, int position);
     }
 
     public void refreshPlaylist() {

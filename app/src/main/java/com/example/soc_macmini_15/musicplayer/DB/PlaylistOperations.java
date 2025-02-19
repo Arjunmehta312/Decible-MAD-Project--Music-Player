@@ -92,8 +92,14 @@ public class PlaylistOperations {
 
     public void deletePlaylist(long playlistId) {
         open();
+        // First delete all songs in the playlist
+        database.delete(PlaylistDBHandler.TABLE_PLAYLIST_SONGS,
+                PlaylistDBHandler.COLUMN_PLAYLIST_ID + " = ?",
+                new String[]{String.valueOf(playlistId)});
+        
+        // Then delete the playlist itself
         database.delete(PlaylistDBHandler.TABLE_PLAYLISTS,
-                PlaylistDBHandler.COLUMN_PLAYLIST_ID + "=?",
+                PlaylistDBHandler.COLUMN_PLAYLIST_ID + " = ?",
                 new String[]{String.valueOf(playlistId)});
         close();
     }
@@ -101,7 +107,8 @@ public class PlaylistOperations {
     public void removeSongFromPlaylist(long playlistId, String songPath) {
         open();
         database.delete(PlaylistDBHandler.TABLE_PLAYLIST_SONGS,
-                PlaylistDBHandler.COLUMN_PLAYLIST_ID + "=? AND " + PlaylistDBHandler.COLUMN_PATH + "=?",
+                PlaylistDBHandler.COLUMN_PLAYLIST_ID + " = ? AND " + 
+                PlaylistDBHandler.COLUMN_PATH + " = ?",
                 new String[]{String.valueOf(playlistId), songPath});
         close();
     }
@@ -110,9 +117,8 @@ public class PlaylistOperations {
         open();
         ContentValues values = new ContentValues();
         values.put(PlaylistDBHandler.COLUMN_PLAYLIST_NAME, newName);
-        database.update(PlaylistDBHandler.TABLE_PLAYLISTS,
-                values,
-                PlaylistDBHandler.COLUMN_PLAYLIST_ID + "=?",
+        database.update(PlaylistDBHandler.TABLE_PLAYLISTS, values,
+                PlaylistDBHandler.COLUMN_PLAYLIST_ID + " = ?",
                 new String[]{String.valueOf(playlistId)});
         close();
     }

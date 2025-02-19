@@ -524,25 +524,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void fullSongList(ArrayList<SongsList> songsList, int position, boolean playlistFlag) {
+    public void fullSongList(ArrayList<SongsList> songsList, int position) {
         this.songList = songsList;
         this.currentPosition = position;
-        this.playlistFlag = playlistFlag;
+        this.playlistFlag = false;
     }
 
     @Override
     public String queryText() {
-        return searchText.toLowerCase();
-    }
-
-    @Override
-    public SongsList getSong() {
-        return currSong;
-    }
-
-    @Override
-    public boolean getPlaylistFlag() {
-        return playlistFlag;
+        return searchText;
     }
 
     @Override
@@ -556,20 +546,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    public SongsList getSong() {
+        return currSong;
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mediaPlayer.release();
-        handler.removeCallbacks(runnable);
+    public boolean getPlaylistFlag() {
+        return playlistFlag;
     }
 
     @Override
@@ -578,7 +561,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ArrayList<SongsList> playlistSongs = playlistOperations.getPlaylistSongs(playlist.getId());
         if (!playlistSongs.isEmpty()) {
             onDataPass(playlistSongs.get(0).getTitle(), playlistSongs.get(0).getPath());
-            fullSongList(playlistSongs, 0, false);
+            fullSongList(playlistSongs, 0, true);
         }
     }
 
@@ -753,5 +736,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             currentPosition = -1;
             attachMusic(name, path);
         }
+    }
+
+    @Override
+    public void fullSongList(ArrayList<SongsList> songsList, int position, boolean playlistFlag) {
+        this.songList = songsList;
+        this.currentPosition = position;
+        this.playlistFlag = playlistFlag;
     }
 }

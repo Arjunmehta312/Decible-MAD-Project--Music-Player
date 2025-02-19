@@ -524,10 +524,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void fullSongList(ArrayList<SongsList> songList, int position) {
-        this.songList = songList;
+    public void fullSongList(ArrayList<SongsList> songsList, int position, boolean playlistFlag) {
+        this.songList = songsList;
         this.currentPosition = position;
-        this.playlistFlag = false;
+        this.playlistFlag = playlistFlag;
     }
 
     @Override
@@ -537,7 +537,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public SongsList getSong() {
-        currentPosition = -1;
         return currSong;
     }
 
@@ -579,7 +578,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ArrayList<SongsList> playlistSongs = playlistOperations.getPlaylistSongs(playlist.getId());
         if (!playlistSongs.isEmpty()) {
             onDataPass(playlistSongs.get(0).getTitle(), playlistSongs.get(0).getPath());
-            fullSongList(playlistSongs, 0);
+            fullSongList(playlistSongs, 0, false);
         }
     }
 
@@ -745,6 +744,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             shuffleIndices = null;
             Toast.makeText(this, "Shuffle Off", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onDataParsed(String name, String path) {
+        if (name != null && path != null) {
+            currentPosition = -1;
+            attachMusic(name, path);
         }
     }
 }

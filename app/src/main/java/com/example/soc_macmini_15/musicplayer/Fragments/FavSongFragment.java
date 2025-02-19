@@ -94,13 +94,12 @@ public class FavSongFragment extends ListFragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Toast.makeText(getContext(), "You clicked :\n" + songsList.get(position), Toast.LENGTH_SHORT).show();
                 if (!finalSearchedList) {
-                    createDataParsed.onDataPass(songsList.get(position).getTitle(), songsList.get(position).getPath());
-                    createDataParsed.fullSongList(songsList, position);
+                    createDataParsed.onDataParsed(songsList.get(position).getTitle(), songsList.get(position).getPath());
+                    createDataParsed.fullSongList(songsList, position, false);
                 } else {
-                    createDataParsed.onDataPass(newList.get(position).getTitle(), newList.get(position).getPath());
-                    createDataParsed.fullSongList(songsList, position);
+                    createDataParsed.onDataParsed(newList.get(position).getTitle(), newList.get(position).getPath());
+                    createDataParsed.fullSongList(newList, position, false);
                 }
             }
         });

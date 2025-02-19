@@ -101,13 +101,15 @@ public class CurrentSongFragment extends ListFragment {
     }
 
     public interface createDataParsed {
-        public void onDataPass(String name, String path);
+        void onDataParsed(String name, String path);
 
-        public void fullSongList(ArrayList<SongsList> songList, int position);
+        void onDataPass(String name, String path);
 
-        public SongsList getSong();
+        void fullSongList(ArrayList<SongsList> songList, int position);
 
-        public boolean getPlaylistFlag();
+        SongsList getSong();
+
+        boolean getPlaylistFlag();
     }
 
 

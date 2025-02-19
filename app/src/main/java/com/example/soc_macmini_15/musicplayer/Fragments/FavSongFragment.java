@@ -118,13 +118,10 @@ public class FavSongFragment extends ListFragment {
     }
 
     public interface createDataParsed {
-        public void onDataPass(String name, String path);
-
-        public void fullSongList(ArrayList<SongsList> songList, int position);
-
-        public int getPosition();
-
-        public String queryText();
+        void onDataParsed(String name, String path);
+        void fullSongList(ArrayList<SongsList> songsList, int position, boolean playlistFlag);
+        int getPosition();
+        String queryText();
     }
 
     public SongAdapter onQueryTextChange() {
@@ -154,7 +151,7 @@ public class FavSongFragment extends ListFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         favoritesOperations.removeSong(index);
-                        createDataParsed.fullSongList(songsList, position);
+                        createDataParsed.fullSongList(songsList, position, false);
                         setContent();
                     }
                 });

@@ -512,8 +512,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onDataPass(String name, String path) {
-        Toast.makeText(this, name, Toast.LENGTH_LONG).show();
-        attachMusic(name, path);
+        if (name != null && path != null) {
+            currentPosition = -1;
+            attachMusic(name, path);
+        }
     }
 
     @Override
@@ -525,8 +527,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void fullSongList(ArrayList<SongsList> songList, int position) {
         this.songList = songList;
         this.currentPosition = position;
-        this.playlistFlag = songList.size() == allSongLength;
-        this.playContinueFlag = !playlistFlag;
+        this.playlistFlag = false;
     }
 
     @Override

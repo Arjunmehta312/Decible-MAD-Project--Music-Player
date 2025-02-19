@@ -168,14 +168,11 @@ public class AllSongFragment extends ListFragment {
     }
 
     public interface createDataParse {
-        public void onDataPass(String name, String path);
-
-        public void fullSongList(ArrayList<SongsList> songList, int position);
-
-        public String queryText();
-
-        public void currentSong(SongsList songsList);
-        public void getLength(int length);
+        void onDataPass(String name, String path);
+        void fullSongList(ArrayList<SongsList> songList, int position);
+        String queryText();
+        void currentSong(SongsList songsList);
+        void getLength(int length);
     }
 
 }

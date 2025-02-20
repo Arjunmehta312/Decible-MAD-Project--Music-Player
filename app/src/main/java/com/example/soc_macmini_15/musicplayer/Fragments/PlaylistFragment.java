@@ -234,6 +234,7 @@ public class PlaylistFragment extends Fragment {
     public interface createPlaylistDialog {
         void onDataPass(String name, String path);
         void fullSongList(ArrayList<SongsList> songList, int position);
+        void onPlaylistSelected(Playlist playlist);
     }
 
     public void refreshPlaylist() {

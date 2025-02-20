@@ -8,7 +8,7 @@
 An interactive Android music player application that provides a seamless music playback experience with features like playlist management, favorites, and local storage integration.
 
 ## Designed for Semester 4's Mobile Application Development Project 
-
+ 
 ## Developers
 - Arjun Mehta (K036)
 - Dakshita Galhotra (K021)

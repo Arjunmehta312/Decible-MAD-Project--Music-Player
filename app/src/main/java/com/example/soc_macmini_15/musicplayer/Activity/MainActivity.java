@@ -46,6 +46,7 @@ import com.example.soc_macmini_15.musicplayer.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, AllSongFragment.createDataParse, FavSongFragment.createDataParsed, CurrentSongFragment.createDataParsed, PlaylistFragment.createPlaylistDialog {
 
@@ -77,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private boolean shuffleMode = false;
     private ArrayList<Integer> shuffleIndices;
+    private Random random = new Random();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -373,12 +375,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.img_btn_shuffle:
                 toggleShuffle();
-                // Update button appearance
-                if (shuffleMode) {
-                    imgBtnShuffle.setAlpha(1.0f);
-                } else {
-                    imgBtnShuffle.setAlpha(0.5f);
-                }
                 break;
         }
     }
@@ -418,6 +414,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         });
+
+        // If we're entering shuffle mode with a new song
+        if (shuffleMode && shuffleIndices == null) {
+            createShuffleIndices();
+        }
     }
 
     /**
@@ -524,10 +525,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void fullSongList(ArrayList<SongsList> songsList, int position) {
-        this.songList = songsList;
+    public void fullSongList(ArrayList<SongsList> songList, int position) {
+        this.songList = songList;
         this.currentPosition = position;
         this.playlistFlag = false;
+        
+        if (shuffleMode) {
+            createShuffleIndices();
+        }
     }
 
     @Override
@@ -716,18 +721,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void toggleShuffle() {
         shuffleMode = !shuffleMode;
         if (shuffleMode) {
-            // Create shuffle indices
-            shuffleIndices = new ArrayList<>();
-            for (int i = 0; i < songList.size(); i++) {
-                shuffleIndices.add(i);
-            }
-            // Shuffle the indices
-            Collections.shuffle(shuffleIndices);
-            Toast.makeText(this, "Shuffle On", Toast.LENGTH_SHORT).show();
+            // Visual feedback - make button more opaque when active
+            imgBtnShuffle.setAlpha(1.0f);
+            createShuffleIndices();
         } else {
-            shuffleIndices = null;
-            Toast.makeText(this, "Shuffle Off", Toast.LENGTH_SHORT).show();
+            // Make button more transparent when inactive
+            imgBtnShuffle.setAlpha(0.5f);
         }
+    }
+
+    private void createShuffleIndices() {
+        shuffleIndices = new ArrayList<>();
+        for (int i = 0; i < songList.size(); i++) {
+            shuffleIndices.add(i);
+        }
+        Collections.shuffle(shuffleIndices);
     }
 
     @Override
@@ -743,5 +751,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         this.songList = songsList;
         this.currentPosition = position;
         this.playlistFlag = playlistFlag;
+        
+        if (shuffleMode) {
+            createShuffleIndices();
+        }
     }
 }

@@ -1,9 +1,5 @@
 # Android Music Player Application
 
-<p align="center">
-  <img src="docs/images/music_player_uml.png" alt="Music Player UML Diagram" width="800"/>
-</p>
-
 ## Overview
 An interactive Android music player application that provides a seamless music playback experience with features like playlist management, favorites, and local storage integration.
 
@@ -80,6 +76,11 @@ An interactive Android music player application that provides a seamless music p
    - Song collection
 
 ## Technical Implementation
+
+### UML Diagram
+<p align="center">
+  <img src="docs/images/music_player_uml.png" alt="Music Player UML Diagram" width="800"/>
+</p>
 
 ### Database Schema
 1. **Favorites Table**

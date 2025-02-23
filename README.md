@@ -77,10 +77,11 @@ An interactive Android music player application that provides a seamless music p
 
 ## Technical Implementation
 
-### UML Diagram
+### Simplified Relationship Diagram
 <p align="center">
-  <img src="docs/images/music_player_uml.png" alt="Music Player UML Diagram" width="800"/>
+  <img src="docs/images/Simplified Relationship Diagram.png" alt="Simplified Relationship Diagram" width="600"/>
 </p>
+
 
 ### Database Schema
 1. **Favorites Table**
@@ -115,7 +116,10 @@ PRIMARY KEY (playlistId, songpath),
 FOREIGN KEY (playlistId) REFERENCES playlists(playlistId) ON DELETE CASCADE
 )
 ```
-
+### UML Diagram
+<p align="center">
+  <img src="docs/images/music_player_uml.png" alt="Music Player UML Diagram" width="600"/>
+</p>
 
 ## Setup and Installation
 

@@ -79,7 +79,7 @@ An interactive Android music player application that provides a seamless music p
 
 ### Simplified Relationship Diagram
 <p align="center">
-  <img src="docs/images/Simplified Relationship Diagram.png" alt="Simplified Relationship Diagram" width="600"/>
+  <img src="docs\images\Simplified Relationship Diagram.png" alt="Simplified Relationship Diagram" width="600"/>
 </p>
 
 

@@ -1,5 +1,5 @@
 # Android Music Player Application
-
+ 
 ## Overview
 An interactive Android music player application that provides a seamless music playback experience with features like playlist management, favorites, and local storage integration.
 

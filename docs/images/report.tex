@@ -1,0 +1,372 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{tocloft}
+\usepackage{fancyhdr}
+
+\geometry{a4paper, margin=1in}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+}
+
+\lstset{
+    frame=single,
+    breaklines=true,
+    postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookrightarrow\space}},
+    basicstyle=\ttfamily\small,
+}
+
+\title{\Huge \textbf{Android Music Player Application}\\
+       \Large Project Report}
+\author{Arjun Mehta (K036)\\
+        Dakshita Galhotra (K021)\\
+        Jal Bafana (K005)}
+\date{February 2023}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\newpage
+\tableofcontents
+\newpage
+
+\section*{Abstract}
+\addcontentsline{toc}{section}{Abstract}
+This project developed an Android-based music player application focusing on providing a seamless and intuitive music playback experience. The application leverages the Android framework to deliver core functionalities including audio playback, playlist management, favorites organization, and a modern Material Design user interface. Notably, the app successfully combines local media access with an intuitive user experience, addressing the need for a lightweight yet feature-rich music player. Initial testing shows the application performs effectively across various Android devices, demonstrating its potential as a practical solution for everyday music consumption.
+
+\section{Introduction}
+\subsection{Background}
+Mobile devices have become the primary method for consuming digital music, creating a demand for efficient, user-friendly music applications. While numerous commercial music players exist, many are bloated with unnecessary features or require subscription services, highlighting the need for a streamlined, offline music player.
+
+\subsection{Need for the Application}
+This music player application was developed to address several needs:
+\begin{itemize}
+    \item Provide a lightweight alternative to resource-intensive commercial players
+    \item Enable offline music access without requiring continuous internet connectivity
+    \item Offer simple playlist management without account requirements
+    \item Deliver an intuitive interface that follows modern design principles
+\end{itemize}
+
+\subsection{Objectives}
+The primary objectives of this project were to:
+\begin{enumerate}
+    \item Develop a fully functional Android music player for local media
+    \item Implement comprehensive playlist and favorites management
+    \item Create an intuitive, responsive user interface following Material Design guidelines
+    \item Ensure efficient media handling and seamless playback experience
+    \item Build a modular, maintainable application architecture
+\end{enumerate}
+
+\section{Literature Review}
+\subsection{Existing Solutions}
+Several popular music player applications were examined during the development process:
+\begin{itemize}
+    \item \textbf{Spotify:} Industry leader with streaming capabilities and algorithm-based recommendations
+    \item \textbf{Google Play Music/YouTube Music:} Integrated with Google's ecosystem with both streaming and local playback
+    \item \textbf{VLC Media Player:} Open-source with broad format support but limited playlist management
+    \item \textbf{BlackPlayer:} Android-focused with extensive customization but more complex UI
+\end{itemize}
+
+These applications offer valuable insights but also demonstrated limitations that our application addresses, particularly in terms of simplicity and offline usability.
+
+\subsection{Technologies and Frameworks}
+The project leverages several key Android technologies:
+\begin{itemize}
+    \item \textbf{Android SDK:} Provides the foundation for application development
+    \item \textbf{MediaPlayer API:} Core component for audio playback handling
+    \item \textbf{SQLite Database:} Lightweight storage solution for playlists and favorites
+    \item \textbf{Material Design Components:} UI framework for consistent visual elements
+    \item \textbf{Fragment-based Architecture:} Enables modular, responsive layout design
+\end{itemize}
+
+\section{Methodology}
+\subsection{Development Approach}
+The application was developed using an iterative approach, with distinct phases:
+\begin{enumerate}
+    \item \textbf{Research and Planning:} Analyzing requirements and existing solutions
+    \item \textbf{Core Architecture Design:} Establishing the foundational structure
+    \item \textbf{UI Implementation:} Developing the interface following Material Design principles
+    \item \textbf{Feature Implementation:} Building core functionality incrementally
+    \item \textbf{Testing and Refinement:} Improving performance and user experience
+\end{enumerate}
+
+\subsection{Tools and Technologies Used}
+\begin{itemize}
+    \item \textbf{Android Studio:} Primary IDE for development
+    \item \textbf{Java:} Primary programming language
+    \item \textbf{SQLite:} Database for persistent storage
+    \item \textbf{Git:} Version control system
+    \item \textbf{Gradle:} Build automation tool
+\end{itemize}
+
+\subsection{Development Process}
+Development followed a component-based approach, focusing on individual modules:
+\begin{enumerate}
+    \item Media access and playback engine
+    \item UI design and implementation
+    \item Database design and integration
+    \item Playlist management system
+    \item Integration and system testing
+\end{enumerate}
+
+\section{System Design}
+\subsection{Architecture}
+The application follows the Model-View-Controller (MVC) architecture pattern:
+\begin{itemize}
+    \item \textbf{Model:} Data classes (SongsList, Playlist) and database operations
+    \item \textbf{View:} XML layouts and UI components
+    \item \textbf{Controller:} Activity and Fragment classes that handle user interactions
+\end{itemize}
+
+\subsection{User Interface Design}
+The UI implements Material Design principles with:
+\begin{itemize}
+    \item Navigation drawer for main menu access
+    \item Tab-based interface for content organization
+    \item Player controls with intuitive iconography
+    \item Responsive layouts for different screen sizes
+    \item Consistent color scheme and typography
+\end{itemize}
+
+\subsection{Database Schema}
+The application uses SQLite with three primary tables:
+
+\subsubsection{Favorites Table}
+Stores user's favorite songs
+\begin{lstlisting}[language=SQL]
+CREATE TABLE favorites (
+  songID INTEGER,
+  title TEXT,
+  subtitle TEXT,
+  songpath TEXT PRIMARY KEY
+)
+\end{lstlisting}
+
+\subsubsection{Playlists Table}
+Stores playlist metadata
+\begin{lstlisting}[language=SQL]
+CREATE TABLE playlists (
+  playlistId INTEGER PRIMARY KEY AUTOINCREMENT,
+  playlistName TEXT UNIQUE
+)
+\end{lstlisting}
+
+\subsubsection{Playlist Songs Table}
+Maps songs to playlists
+\begin{lstlisting}[language=SQL]
+CREATE TABLE playlist_songs (
+  playlistId INTEGER,
+  songId INTEGER,
+  title TEXT,
+  subtitle TEXT,
+  songpath TEXT,
+  PRIMARY KEY (playlistId, songpath),
+  FOREIGN KEY (playlistId) REFERENCES playlists(playlistId) ON DELETE CASCADE
+)
+\end{lstlisting}
+
+\subsection{Component Integration}
+The application integrates several key components:
+\begin{itemize}
+    \item \textbf{MediaPlayer:} Handles audio playback and streaming
+    \item \textbf{ContentResolver:} Accesses device media storage
+    \item \textbf{DrawerLayout and NavigationView:} Provides navigation structure
+    \item \textbf{ViewPager and TabLayout:} Organizes content into swiping tabs
+    \item \textbf{RecyclerView with custom adapters:} Displays song lists efficiently
+\end{itemize}
+
+\section{Implementation}
+\subsection{Core Components}
+The implementation includes several key components:
+
+\subsubsection{Activity Classes}
+\begin{itemize}
+    \item \textbf{MainActivity:} Central hub handling playback controls, navigation, and fragment management
+    \item \textbf{SplashActivity:} Entry point with initialization logic
+\end{itemize}
+
+\subsubsection{Fragment Classes}
+\begin{itemize}
+    \item \textbf{AllSongFragment:} Displays all available songs
+    \item \textbf{FavSongFragment:} Shows user's favorite songs
+    \item \textbf{CurrentSongFragment:} Displays current playlist
+    \item \textbf{PlaylistFragment:} Manages playlist creation and viewing
+\end{itemize}
+
+\subsubsection{Database Handlers}
+\begin{itemize}
+    \item \textbf{FavoritesDBHandler:} Schema definition for favorites
+    \item \textbf{FavoritesOperations:} CRUD operations for favorites
+    \item \textbf{PlaylistDBHandler:} Schema definition for playlists
+    \item \textbf{PlaylistOperations:} CRUD operations for playlists
+\end{itemize}
+
+\subsubsection{Model Classes}
+\begin{itemize}
+    \item \textbf{SongsList:} Represents individual songs with metadata
+    \item \textbf{Playlist:} Encapsulates playlist information
+\end{itemize}
+
+\subsubsection{Adapters}
+\begin{itemize}
+    \item \textbf{SongAdapter:} Binds song data to list views
+    \item \textbf{PlaylistAdapter:} Handles playlist display
+    \item \textbf{ViewPagerAdapter:} Manages fragment navigation
+\end{itemize}
+
+\subsection{Challenges and Solutions}
+Several implementation challenges were addressed:
+
+\subsubsection{Media Permission Handling}
+\begin{itemize}
+    \item \textbf{Challenge:} Android's permission model restricts media access
+    \item \textbf{Solution:} Implemented runtime permission requests with fallback handling
+\end{itemize}
+
+\subsubsection{Playback Continuity}
+\begin{itemize}
+    \item \textbf{Challenge:} Maintaining playback across navigation
+    \item \textbf{Solution:} Centralized MediaPlayer in MainActivity with state management
+\end{itemize}
+
+\subsubsection{Efficient Media Scanning}
+\begin{itemize}
+    \item \textbf{Challenge:} Loading large music libraries efficiently
+    \item \textbf{Solution:} Implemented background scanning with UI feedback
+\end{itemize}
+
+\subsubsection{Database Integration}
+\begin{itemize}
+    \item \textbf{Challenge:} Ensuring consistent database operations
+    \item \textbf{Solution:} Created centralized database operations classes with transaction support
+\end{itemize}
+
+\section{Testing}
+\subsection{Testing Methodology}
+The application was tested using multiple approaches:
+\begin{itemize}
+    \item \textbf{Unit Testing:} Individual components tested in isolation
+    \item \textbf{Integration Testing:} Verifying component interactions
+    \item \textbf{Manual Testing:} Real-world usage scenarios
+    \item \textbf{Performance Testing:} Measuring responsiveness and resource usage
+\end{itemize}
+
+\subsection{Test Results}
+Testing revealed mostly positive results:
+\begin{itemize}
+    \item Core functionality performed as expected across different Android versions
+    \item Database operations maintained data integrity
+    \item UI responsiveness met requirements even with large music libraries
+    \item Memory usage remained within acceptable parameters
+\end{itemize}
+
+\subsection{Issues and Resolutions}
+Some issues were identified and addressed:
+\begin{itemize}
+    \item MediaPlayer state inconsistencies resolved with improved lifecycle management
+    \item Database query optimization improved loading times for large playlists
+    \item UI layout issues on various screen sizes corrected with constraint-based layouts
+    \item Permission handling edge cases addressed with more robust error handling
+\end{itemize}
+
+\section{Results and Discussion}
+\subsection{Achievements}
+The project successfully delivered:
+\begin{itemize}
+    \item A fully functional music player with core playback controls
+    \item Comprehensive playlist management capabilities
+    \item Favorites system for quick access to preferred songs
+    \item Search functionality for finding specific tracks
+    \item Intuitive Material Design interface
+    \item Offline functionality without internet requirements
+\end{itemize}
+
+\subsection{Objective Fulfillment}
+All defined objectives were successfully met:
+\begin{enumerate}
+    \item The application provides complete functionality for local music playback
+    \item The playlist system allows for flexible organization of music
+    \item The user interface follows Material Design guidelines for intuitive use
+    \item Media handling is efficient with smooth playback transition
+    \item The architecture is modular and maintainable for future enhancement
+\end{enumerate}
+
+\subsection{Comparative Analysis}
+Compared to existing solutions, this application offers:
+\begin{itemize}
+    \item Lower resource utilization than commercial streaming apps
+    \item More streamlined interface than feature-heavy alternatives
+    \item Better playlist management than basic media players
+    \item Complete offline functionality without account requirements
+\end{itemize}
+
+\section{Conclusion}
+\subsection{Summary}
+The Android Music Player project successfully delivers a feature-rich yet lightweight music playback solution. By focusing on core functionality and user experience, the application provides practical value while maintaining simplicity. The implementation demonstrates effective use of Android framework components and follows best practices in mobile application development.
+
+\subsection{Key Insights}
+Throughout development, several valuable insights were gained:
+\begin{itemize}
+    \item The importance of efficient media handling for responsive user experience
+    \item The value of consistent error handling for robust application behavior
+    \item The significance of user-centered design in music consumption applications
+    \item The effectiveness of modular architecture for maintainable development
+\end{itemize}
+
+\subsection{Future Enhancements}
+Potential future improvements include:
+\begin{itemize}
+    \item Implementing audio visualization features
+    \item Adding basic audio editing capabilities
+    \item Introducing cloud backup for playlists
+    \item Implementing audio equalizer functionality
+    \item Supporting additional media formats
+    \item Adding theme customization options
+\end{itemize}
+
+\section{References}
+\begin{enumerate}
+    \item Android Developers. (2022). MediaPlayer Overview. \url{https://developer.android.com/guide/topics/media/mediaplayer}
+    \item Android Developers. (2022). Fragments. \url{https://developer.android.com/guide/fragments}
+    \item Android Developers. (2022). Save data in a local database using Room. \url{https://developer.android.com/training/data-storage/room}
+    \item Material Design. (2022). Material Design Guidelines. \url{https://material.io/design}
+    \item SQLite. (2022). Documentation. \url{https://www.sqlite.org/docs.html}
+\end{enumerate}
+
+\section{Appendices}
+\subsection{Technical Documentation}
+The project architecture follows standard Android application patterns with specific implementation details described in the implementation section.
+
+\subsection{Code Repository}
+The application source code is maintained in a version control system with organized package structure:
+\begin{itemize}
+    \item \texttt{com.example.soc\_macmini\_15.musicplayer.Activity}: Core activities
+    \item \texttt{com.example.soc\_macmini\_15.musicplayer.Fragments}: UI fragments
+    \item \texttt{com.example.soc\_macmini\_15.musicplayer.Adapter}: Data binding adapters
+    \item \texttt{com.example.soc\_macmini\_15.musicplayer.Model}: Data models
+    \item \texttt{com.example.soc\_macmini\_15.musicplayer.DB}: Database operations
+\end{itemize}
+
+\subsection{User Manual}
+The application is designed to be intuitive, with a tab-based interface for navigation:
+\begin{itemize}
+    \item \textbf{All Songs:} View and play all available music
+    \item \textbf{Favorites:} Access marked favorite songs
+    \item \textbf{Playlists:} Create and manage custom playlists
+    \item \textbf{Control Panel:} Provides playback controls and current song information
+    \item \textbf{Navigation Drawer:} Access additional options and information
+\end{itemize}
+
+The music player requires storage permission to access local media files and provides standard playback controls including play/pause, next, previous, shuffle, and repeat options.
+
+\end{document}
